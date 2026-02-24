@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prvá výplata bez chaosu</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background:#f4f6f8; color:#222; }
+    header { background:#1e3a8a; color:white; padding:40px 20px; text-align:center; }
+    section { max-width:900px; margin:40px auto; padding:0 20px; }
+    h2 { color:#1e3a8a; }
+    .box { background:white; padding:20px; border-radius:10px; margin:20px 0; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+    .btn { display:inline-block; background:#1e3a8a; color:white; padding:12px 20px; border-radius:8px; border:none; cursor:pointer; }
+    footer { background:#111827; color:#ccc; text-align:center; padding:20px; margin-top:60px; }
+    input { padding:8px; width:200px; }
+    .result-box { background:#eef2ff; padding:15px; border-radius:8px; margin-top:15px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Prvá výplata bez chaosu</h1>
+  <p>Praktická kalkulačka rozpočtu pre život po škole</p>
+  <p style="font-size:14px; opacity:0.9;">Stredná priemyselná škola dopravná Trnava – tím <strong>Dopraváci</strong></p>
+</header>
+
+<section>
+  <div class="box">
+    <h2>Prečo tento projekt vznikol?</h2>
+    <p>Mnohí mladí ľudia po skončení školy nevedia, ako správne narábať s prvou výplatou. Tento web im jednoduchým a praktickým spôsobom ukáže, ako si rozdeliť peniaze tak, aby neostali pred výplatou na nule.</p>
+  </div>
+
+  <div class="box">
+    <h2>Kalkulačka rozpočtu</h2>
+    <p>Zadaj svoju <strong>čistú mesačnú mzdu</strong> a vyber svoju životnú situáciu. Kalkulačka ti odporučí rozdelenie výdavkov.</p>
+
+    <label>Čistá mzda (€):</label><br><br>
+    <input type="number" id="salary" placeholder="napr. 900" />
+    <br><br>
+
+    <label>Životná situácia:</label><br><br>
+    <select id="situation" style="padding:8px; width:220px;">
+      <option value="parents">Bývam u rodičov</option>
+      <option value="dorm">Bývam na intráku</option>
+      <option value="rent">Bývam v podnájme</option>
+    </select>
+    <br><br>
+
+    <!-- Voliteľné: reálne výdavky používateľa -->
+    <div style="margin:16px 0 10px 0; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid rgba(0,0,0,0.06);">
+      <p style="margin:0 0 10px 0;"><strong>Zadaj aj svoje reálne mesačné výdavky (voliteľné)</strong></p>
+      <div style="display:flex; flex-wrap:wrap; gap:10px;">
+        <div>
+          <label style="font-size:13px;">Bývanie (€)</label><br>
+          <input type="number" id="exp_housing" placeholder="napr. 0 / 250" />
+        </div>
+        <div>
+          <label style="font-size:13px;">Jedlo (€)</label><br>
+          <input type="number" id="exp_food" placeholder="napr. 150" />
+        </div>
+        <div>
+          <label style="font-size:13px;">Doprava (€)</label><br>
+          <input type="number" id="exp_transport" placeholder="napr. 40" />
+        </div>
+        <div>
+          <label style="font-size:13px;">Zábava/ostatné (€)</label><br>
+          <input type="number" id="exp_fun" placeholder="napr. 120" />
+        </div>
+      </div>
+      <p style="margin:10px 0 0 0; font-size:13px; color:#555;">Tip: Ak nič nezadáš, zobrazí sa len odporúčané rozdelenie.</p>
+    </div>
+
+    <button class="btn" onclick="calculate()">Vypočítať rozpočet</button>
+
+    <div id="result"></div>
+    <div id="warnings" class="result-box" style="display:none; margin-top:12px;"></div>
+  </div>
+
+  <div class="box">
+    <h2>Ako to rýchlo pochopiť?</h2>
+    <p>Web ti odporúča rozdelenie výplaty podľa tvojej životnej situácie. Nie je to „príkaz“, ale <strong>praktický rámec</strong>, ktorý pomáha neostať pred výplatou na nule.</p>
+    <ul>
+      <li><strong>Nutné výdavky</strong> – bývanie, jedlo, doprava (to, čo musíš zaplatiť)</li>
+      <li><strong>Osobné výdavky</strong> – zábava, oblečenie, voľný čas (to, čo chceš, nie musíš)</li>
+      <li><strong>Úspory</strong> – rezerva + sporenie (tvoj „airbag“, keď sa niečo pokazí)</li>
+    </ul>
+    <p style="font-size:14px; color:#555;">Tip: Ak si nastavíš trvalý príkaz na úspory hneď po výplate, neminieš ich omylom.</p>
+  </div>
+
+  <div class="box">
+    <h2>Finančné pravidlo 50–30–20 (a prečo ho upravujeme)</h2>
+    <p>Finančné pravidlo <strong>50–30–20</strong> je jednoduchý spôsob, ako si rozdeliť výplatu:</p>
+    <ul>
+      <li><strong>50 % – nutné výdavky</strong> (bývanie, jedlo, doprava)</li>
+      <li><strong>30 % – osobné výdavky</strong> (zábava, oblečenie, voľný čas)</li>
+      <li><strong>20 % – úspory</strong> (rezerva, sporenie, budúcnosť)</li>
+    </ul>
+    <p>Toto pravidlo slúži ako <strong>základ</strong>, nie ako príkaz. Preto na tomto webe rozdelenie <strong>prispôsobujeme životnej situácii</strong> – inak hospodári človek, ktorý býva u rodičov, a inak ten, kto býva v podnájme.</p>
+    <p style="font-size:14px; color:#555;"><strong>Cieľom pravidla nie je presné percento</strong>, ale mať kontrolu nad peniazmi a vytvárať finančnú rezervu.</p>
+  </div>
+
+  <div class="box">
+    <h2>Finančné upozornenia</h2>
+    <ul>
+      <li>⚠️ Ak minieš viac ako odporúčanú sumu na osobné výdavky, hrozí, že ti peniaze nevydržia celý mesiac.</li>
+      <li>⚠️ Ak si netvoríš úspory, nemáš rezervu pri nečakaných výdavkoch.</li>
+      <li>⚠️ Pôžičky a splátky znižujú tvoju budúcu výplatu.</li>
+    </ul>
+    <p style="font-size:14px;">Kalkulačka slúži ako odporúčanie. Každý má inú životnú situáciu a je dôležité rozmýšľať nad vlastnými prioritami.</p>
+    <p style="font-size:14px; color:#555;">Tip: Ak máš výplatu, rozdeľ ju hneď v deň pripísania – najprv úspory, potom výdavky.</p>
+  </div>
+
+  <div class="box">
+    <h2>Čo sa tým naučíš?</h2>
+    <ul>
+      <li>plánovať výdavky ešte pred minutím peňazí</li>
+      <li>vyhnúť sa impulzívnemu míňaniu</li>
+      <li>vytvárať si finančnú rezervu</li>
+      <li>robiť zodpovedné rozhodnutia s peniazmi</li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>Najčastejšie chyby po prvej výplate</h2>
+    <ul>
+      <li>❌ Minutie veľkej časti výplaty hneď po jej pripísaní</li>
+      <li>❌ Žiadny mesačný plán výdavkov</li>
+      <li>❌ Spoliehanie sa na pôžičky a splátky</li>
+      <li>❌ Žiadna finančná rezerva</li>
+    </ul>
+    <p style="font-size:14px; color:#555;">Ak sa týmto chybám vyhneš, máš vysokú šancu zvládnuť mesiac bez stresu.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Projekt vytvorený v rámci súťaže Peňažný štvorboj – 3. kolo TAKTIKA</p>
+  <p style="font-size:13px;">SPŠ Dopravná Trnava – tím Dopraváci</p>
+</footer>
+
+<script>
+function calculate() {
+  const parseMoney = (v) => Number(String(v ?? '').replace(',', '.'));
+
+  const salaryRaw = document.getElementById('salary').value;
+  const salary = parseMoney(salaryRaw);
+  const situation = document.getElementById('situation').value;
+
+  if (!Number.isFinite(salary) || salary <= 0) {
+    alert('Zadaj platnú sumu čistej mzdy');
+    return;
+  }
+
+  let needsPercent, wantsPercent, savingsPercent;
+
+  if (situation === 'parents') {
+    needsPercent = 0.35;
+    wantsPercent = 0.40;
+    savingsPercent = 0.25;
+  } else if (situation === 'dorm') {
+    needsPercent = 0.50;
+    wantsPercent = 0.30;
+    savingsPercent = 0.20;
+  } else {
+    needsPercent = 0.60;
+    wantsPercent = 0.25;
+    savingsPercent = 0.15;
+  }
+
+  const needs = salary * needsPercent;
+  const wants = salary * wantsPercent;
+  const savings = salary * savingsPercent;
+  const yearlySavings = savings * 12;
+
+  // Voliteľné: reálne výdavky používateľa (treba vypočítať skôr, než ich použijeme)
+  const expHousing = parseMoney(document.getElementById('exp_housing')?.value);
+  const expFood = parseMoney(document.getElementById('exp_food')?.value);
+  const expTransport = parseMoney(document.getElementById('exp_transport')?.value);
+  const expFun = parseMoney(document.getElementById('exp_fun')?.value);
+
+  const hasReal = [expHousing, expFood, expTransport, expFun].some(v => Number.isFinite(v) && v > 0);
+  const realNeeds = (Number.isFinite(expHousing) ? expHousing : 0)
+    + (Number.isFinite(expFood) ? expFood : 0)
+    + (Number.isFinite(expTransport) ? expTransport : 0);
+  const realWants = (Number.isFinite(expFun) ? expFun : 0);
+  const realTotal = realNeeds + realWants;
+  const realSavings = salary - realTotal;
+
+  const diffNeeds = realNeeds - needs;
+  const diffWants = realWants - wants;
+  const diffNeedsStr = (diffNeeds >= 0 ? `+${diffNeeds.toFixed(2)} €` : `-${Math.abs(diffNeeds).toFixed(2)} €`);
+  const diffWantsStr = (diffWants >= 0 ? `+${diffWants.toFixed(2)} €` : `-${Math.abs(diffWants).toFixed(2)} €`);
+
+  const actualBlock = hasReal ? `
+    <div class="result-box" style="margin-top:12px;">
+      <p style="margin:0 0 8px 0;"><strong>Tvoje reálne mesačné výdavky:</strong></p>
+      <ul>
+        <li>Bývanie: <strong>${(Number.isFinite(expHousing)?expHousing:0).toFixed(2)} €</strong></li>
+        <li>Jedlo: <strong>${(Number.isFinite(expFood)?expFood:0).toFixed(2)} €</strong></li>
+        <li>Doprava: <strong>${(Number.isFinite(expTransport)?expTransport:0).toFixed(2)} €</strong></li>
+        <li>Zábava/ostatné: <strong>${(Number.isFinite(expFun)?expFun:0).toFixed(2)} €</strong></li>
+      </ul>
+      <p style="margin:8px 0 0 0;"><strong>Spolu míňaš:</strong> ${realTotal.toFixed(2)} € • <strong>Ostáva na úspory:</strong> <strong>${realSavings.toFixed(2)} €</strong></p>
+      <p style="margin:8px 0 0 0; font-size:14px; color:#555;">Porovnanie s odporúčaním: nutné <strong>${diffNeedsStr}</strong>, osobné <strong>${diffWantsStr}</strong>.</p>
+      <p style="margin:6px 0 0 0; font-size:13px; color:#6b7280;">Ako to čítať: porovnávame tvoje reálne výdavky (bývanie+jedlo+doprava = nutné, zábava/ostatné = osobné) s odporúčanými sumami z percent. Záporné číslo znamená, že míňaš menej než odporúčanie, kladné že míňaš viac.</p>
+    </div>
+  ` : '';
+
+  // Rezerva (cieľová suma) – rátame z nutných výdavkov
+  const reserve3m = needs * 3;
+  const reserve6m = needs * 6;
+
+  // Ako rýchlo sa k rezerve dostaneš (podľa odporúčaných úspor alebo podľa tvojich reálnych, ak ich zadáš)
+  const monthlySave = hasReal ? Math.max(0, realSavings) : savings;
+  const monthsTo3m = monthlySave > 0 ? Math.ceil(reserve3m / monthlySave) : null;
+  const monthsTo6m = monthlySave > 0 ? Math.ceil(reserve6m / monthlySave) : null;
+
+  // Funkcia na správne skloňovanie slova "mesiac"
+  const mesiacText = (n) => {
+    if (n === 1) return 'mesiac';
+    if (n >= 2 && n <= 4) return 'mesiace';
+    return 'mesiacov';
+  };
+
+  // Jednoduché varovania (behaviorálne „pasce“)
+  const warn = [];
+  if (wantsPercent >= 0.40) warn.push('Ak dáš veľa na zábavu, nastav si limit (napr. hotovosť/týždenný strop), aby si neprečerpal rozpočet.');
+  if (savingsPercent < 0.20) warn.push('Skús sporiť aspoň 20 € mesačne. Aj malé sumy spravia veľký rozdiel v rezerve.');
+  warn.push('Pozor na „rýchle peniaze“ a splátky: najprv si spočítaj, koľko ťa to bude stáť za rok.');
+
+  // Extra upozornenia, ak používateľ zadal reálne výdavky
+  if (hasReal) {
+    if (realSavings < 0) {
+      warn.unshift(`Míňaš viac, než zarobíš: si v mínuse ${Math.abs(realSavings).toFixed(2)} € mesačne. Skús znížiť „zábava/ostatné“ alebo upraviť výdavky.`);
+    } else if (realSavings < savings) {
+      warn.unshift(`Podľa tvojich reálnych výdavkov ti ostáva na úspory ${realSavings.toFixed(2)} €, čo je menej než odporúčané ${savings.toFixed(2)} €. Skús znížiť „zábava/ostatné“ alebo nastaviť limit.`);
+    }
+  }
+
+  document.getElementById('result').innerHTML = `
+    <div class="result-box">
+      <p><strong>Odporúčané rozdelenie výplaty:</strong></p>
+      <ul>
+        <li>Nutné výdavky (${Math.round(needsPercent*100)} %): <strong>${needs.toFixed(2)} €</strong></li>
+        <li>Osobné výdavky (${Math.round(wantsPercent*100)} %): <strong>${wants.toFixed(2)} €</strong></li>
+        <li>Úspory (${Math.round(savingsPercent*100)} %): <strong>${savings.toFixed(2)} €</strong></li>
+      </ul>
+      <p><strong>Ročne by si nasporil:</strong> ${yearlySavings.toFixed(2)} €</p>
+      <p><strong>Rezerva (orientačne):</strong> 3 mesiace ≈ ${reserve3m.toFixed(2)} € | 6 mesiacov ≈ ${reserve6m.toFixed(2)} €</p>
+      <p style="font-size:14px; color:#555;">Rezerva je cieľová suma – počíta sa z nutných výdavkov, aby si v krízovej situácii pokryl základné potreby.</p>
+      <p style="font-size:14px; color:#555; margin-top:8px;"><strong>Ako rýchlo si ju vieš vytvoriť:</strong> ${monthsTo3m ? `Rezervu na 3 mesiace si našporíš približne za <strong>${monthsTo3m} ${mesiacText(monthsTo3m)}</strong>` : 'ak neodkladáš nič (alebo si v mínuse), rezervu nevytvoríš'}${monthsTo6m ? ` • Rezervu na 6 mesiacov si našporíš približne za <strong>${monthsTo6m} ${mesiacText(monthsTo6m)}</strong>` : ''}.</p>
+      <p style="font-size:14px; color:#555;">Výsledky sú orientačné. Ak máš dlhy alebo špecifické výdavky, prispôsob si rozdelenie výdavkov svojej realite.</p>
+    </div>
+    ${actualBlock}`;
+
+  const w = document.getElementById('warnings');
+  w.style.display = 'block';
+  w.innerHTML = `
+    <p style="margin:0 0 8px 0;"><strong>Rýchle tipy a varovania:</strong></p>
+    <ul style="margin:0; padding-left:18px;">
+      ${warn.map(t => `<li>${t}</li>`).join('')}
+    </ul>
+  `;
+}
+
+// --- Mini self-testy (pre vývoj) ---
+// Nespúšťajú alerty, iba vypíšu chyby do konzoly.
+(function runSelfTests(){
+  const approx = (a, b, eps = 1e-9) => Math.abs(a - b) < eps;
+  const assert = (cond, msg) => { if (!cond) console.error('TEST FAIL:', msg); };
+
+  // Test: percentá sa sčítajú na 1
+  const scenarios = {
+    parents: [0.35, 0.40, 0.25],
+    dorm: [0.50, 0.30, 0.20],
+    rent: [0.60, 0.25, 0.15]
+  };
+  Object.entries(scenarios).forEach(([k, arr]) => {
+    const sum = arr.reduce((s, x) => s + x, 0);
+    assert(approx(sum, 1), `Percentá pre ${k} sa nesčítajú na 1 (sum=${sum})`);
+  });
+
+  // Test: jednoduchý výpočet pre parents pri mzde 900
+  // needs=315, wants=360, savings=225
+  const salary = 900;
+  const needs = salary * 0.35;
+  const wants = salary * 0.40;
+  const savings = salary * 0.25;
+  assert(approx(needs, 315), 'Parents needs pre 900 má byť 315');
+  assert(approx(wants, 360), 'Parents wants pre 900 má byť 360');
+  assert(approx(savings, 225), 'Parents savings pre 900 má byť 225');
+
+  // Test: mesiace do 6m rezervy pri mzde 1000 a dorm (needs=500, savings=200)
+  // reserve6=3000, monthlySave=200 -> 15 mesiacov
+  const salary2 = 1000;
+  const needs2 = salary2 * 0.50;
+  const savings2 = salary2 * 0.20;
+  const reserve6 = needs2 * 6;
+  const months = Math.ceil(reserve6 / savings2);
+  assert(months === 15, `Months to 6m reserve má byť 15, je ${months}`);
+})();
+</script>
+
+</body>
+</html>
